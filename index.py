@@ -37,7 +37,7 @@ def get_html(tag, cluster_id):
 
 	encoder = getencoder("ascii")
 
-	return encoder("<img style=\"max-height:300px\" src=\"%s\" /><br />\n<small>By <a href=\"%s\">%s</a> on flickr"%(image_url, page_url, author),"ignore")[0]
+	return encoder("<img style=\"max-height:300px; max-width: 450px; display:block;\" src=\"%s\" /><br />\n<small>By <a href=\"%s\">%s</a> on flickr"%(image_url, page_url, author),"ignore")[0]
 
 def teakittens(environ, start_response):
 	from cStringIO import StringIO
@@ -47,12 +47,14 @@ def teakittens(environ, start_response):
 		print >>ret, "<title>More tea and kittens</title>"
 		print >>ret, """<h2>More tea and kittens</h2>
 		Inspired by <a href="http://www.teaandkittens.co.uk/">Tea and Kittens</a>, plus
-		the <a href="http://www.flickr.com/services/api/">Flickr API</a><br />"""
+		the <a href="http://www.flickr.com/services/api/">Flickr API</a>. 
+		<a href="http://github.com/palfrey/teakittens">Source code</a><br />
+		"""
 		print >>ret, "<table><tr><td>"
 		print >>ret,get_html(tag="tea", cluster_id="teapot-china-teacup")
 		print >>ret, "</td><td>"
 		print >>ret,get_html(tag="kittens", cluster_id="cats-cat-kitten")
-		print >>ret, "</tr></table"
+		print >>ret, "</tr></table>"
 		status = '200 OK'
 		response_headers = [('Content-type','text/html')]
 		start_response(status, response_headers)

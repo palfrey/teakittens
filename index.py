@@ -9,35 +9,20 @@ try:
 except NameError: # python <2.5
 	exception = Exception
 
-import flickrapi
 import random
+from cache import get_list
+random.seed()
 
-(api_key, secret) = [x.strip() for x in file("secrets").readlines()]
+def get_html(tags):
+	photos = get_list(count=100, tags=tags)
+	photo = random.choice(photos.values())
 
-flickr = flickrapi.FlickrAPI(api_key)
-
-def rand_photo(tag):
-	items = list(tag.find("photos"))
-	return random.choice(items)
-
-def get_html(tag, cluster_id):
-	cluster = flickr.tags_getClusterPhotos(tag=tag, cluster_id=cluster_id)
-	r = rand_photo(cluster)
-	id = r.get("id")
-	sizes = flickr.photos_getSizes(photo_id=id)
-	for size in list(sizes.find("sizes")):
-		if int(size.get("width"))>=500:
-			break
-
-	image_url = size.get("source")
-
-	info = flickr.photos_getInfo(photo_id=id, secret=r.get("secret"))
-	page_url = info.find("photo").find("urls").find("url").text
-	author = info.find("photo").find("owner").get("realname")
+	if photo["author"] == "":
+		photo["author"] = "someone"
 
 	encoder = getencoder("ascii")
 
-	return encoder("<img style=\"max-height:300px; max-width: 450px; display:block;\" src=\"%s\" /><br />\n<small>By <a href=\"%s\">%s</a> on flickr"%(image_url, page_url, author),"ignore")[0]
+	return encoder("<img style=\"max-height:300px; max-width: 450px; display:block;\" src=\"%s\" /><br />\n<small>By <a href=\"%s\">%s</a> on flickr"%(photo["image"], photo["page"], photo["author"]),"ignore")[0]
 
 def teakittens(environ, start_response):
 	from cStringIO import StringIO
@@ -51,9 +36,9 @@ def teakittens(environ, start_response):
 		<a href="http://github.com/palfrey/teakittens">Source code</a><br />
 		"""
 		print >>ret, "<table><tr><td>"
-		print >>ret,get_html(tag="tea", cluster_id="teapot-china-teacup")
+		print >>ret,get_html(tags=("teapot","china","teacup"))
 		print >>ret, "</td><td>"
-		print >>ret,get_html(tag="kittens", cluster_id="cats-cat-kitten")
+		print >>ret,get_html(tags=("cats","cat","kitten"))
 		print >>ret, "</tr></table>"
 		status = '200 OK'
 		response_headers = [('Content-type','text/html')]

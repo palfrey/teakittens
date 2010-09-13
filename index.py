@@ -14,7 +14,7 @@ from cache import get_list
 random.seed()
 
 def get_html(tags):
-	photos = get_list(count=100, tags=tags)
+	photos = get_list(count=150, tags=tags)
 	photo = random.choice(photos.values())
 
 	if photo["author"] == "":

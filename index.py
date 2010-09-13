@@ -36,7 +36,7 @@ def teakittens(environ, start_response):
 		<a href="http://github.com/palfrey/teakittens">Source code</a><br />
 		"""
 		print >>ret, "<table><tr><td>"
-		print >>ret,get_html(tags=("teapot","china","teacup"))
+		print >>ret,get_html(tags=("teapot","tea","-sf","-friends","-seattle", "-cupcake"))
 		print >>ret, "</td><td>"
 		print >>ret,get_html(tags=("cats","cat","kitten"))
 		print >>ret, "</tr></table>"

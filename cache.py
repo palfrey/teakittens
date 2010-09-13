@@ -4,15 +4,26 @@ import pickle
 (api_key, secret) = [x.strip() for x in file("secrets").readlines()]
 flickr = flickrapi.FlickrAPI(api_key)
 
+def do_dump(tags,ids, photos):
+	name = "-".join(tags)
+	pklname = "photos-%s.pickle"%name
+	f = file(pklname,"wb")
+	pickle.dump(name, f)
+	pickle.dump(ids, f)
+	pickle.dump(photos, f)
+	f.close()
+
 def get_list(count=20, tags=[]):
-	pklname = "photos-%s.pickle"%("-".join(tags))
+	name = "-".join(tags)
+	pklname = "photos-%s.pickle"%name
 	
 	ids = None
 	photos = {}
 	try:
 		f = file(pklname,"rb")
+		stored_name = pickle.load(f)
 		ids = pickle.load(f)
-		if len(ids)<count:
+		if len(ids)<count or stored_name != name:
 			ids = None
 		photos = pickle.load(f)
 	except IOError:
@@ -22,11 +33,7 @@ def get_list(count=20, tags=[]):
 
 	if ids == None:
 		ids = [photo.get("id") for photo in flickr.photos_search(text=" ".join(tags),per_page=count).find("photos")]
-		
-		f = file(pklname,"wb")
-		pickle.dump(ids, f)
-		pickle.dump(photos, f)
-		f.close()
+		do_dump(tags, ids, photos)
 	
 	got = 0
 	for id in ids:
@@ -46,10 +53,7 @@ def get_list(count=20, tags=[]):
 			print image_url,author,page_url
 			photos[id] = {"image":image_url, "author":author, "page":page_url}
 
-			f = file(pklname,"wb")
-			pickle.dump(ids, f)
-			pickle.dump(photos, f)
-			f.close()
+			do_dump(tags, ids, photos)
 		got +=1
 		if got == count:
 			break

@@ -21,7 +21,7 @@ def get_list(count=20, tags=[]):
 		pass
 
 	if ids == None:
-		ids = [photo.get("id") for photo in flickr.photos_search(tags=tags,per_page=count).find("photos")]
+		ids = [photo.get("id") for photo in flickr.photos_search(text=" ".join(tags),per_page=count).find("photos")]
 		
 		f = file(pklname,"wb")
 		pickle.dump(ids, f)
